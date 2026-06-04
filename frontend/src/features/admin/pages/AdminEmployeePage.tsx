@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,13 +34,13 @@ const AdminEmployeePage = () => {
 
     // ── Dialog handlers ────────────────────────────────────────────────
 
-    const openAdd = () => {
+    const openAdd = useCallback(() => {
         form.reset(EMPTY_FORM);
         setSaveError(null);
         setDialogMode('add');
-    };
+    }, [form]);
 
-    const openEdit = (employee: EmployeeResponse) => {
+    const openEdit = useCallback((employee: EmployeeResponse) => {
         setSelected(employee);
         form.reset({
             fullname:    employee.fullname,
@@ -50,9 +50,9 @@ const AdminEmployeePage = () => {
         });
         setSaveError(null);
         setDialogMode('edit');
-    };
+    }, [form]);
 
-    const openDetail = (employee: EmployeeResponse) => {
+    const openDetail = useCallback((employee: EmployeeResponse) => {
         setSelected(employee);
         form.reset({
             fullname:    employee.fullname,
@@ -61,14 +61,14 @@ const AdminEmployeePage = () => {
             position_id: employee.position.id,
         });
         setDialogMode('detail');
-    };
+    }, [form]);
 
-    const closeDialog = () => {
+    const closeDialog = useCallback(() => {
         setDialogMode(null);
         setSelected(null);
         form.reset(EMPTY_FORM);
         setSaveError(null);
-    };
+    }, [form]);
 
     // ── Save — dijalankan setelah RHF memvalidasi semua field ──────────
     const handleSave = form.handleSubmit(async (data: EmployeeFormValues) => {
@@ -100,13 +100,11 @@ const AdminEmployeePage = () => {
         }
     });
 
-    const handleDelete = async () => {
+    const handleDelete = useCallback(async () => {
         if (!deleteTarget) return;
         await remove(deleteTarget.id);
         setDeleteTarget(null);
-    };
-
-    // ── Render ─────────────────────────────────────────────────────────
+    }, [deleteTarget, remove]);    
 
     return (
         <div className="space-y-6">
@@ -138,22 +136,17 @@ const AdminEmployeePage = () => {
                     />
                 </CardHeader>
                 <CardContent className="p-0">
-                    {isLoading ? (
-                        <div className="py-16 text-center text-sm text-muted-foreground">
-                            Memuat data...
-                        </div>
-                    ) : (
-                        <EmployeeTable
-                            employees={employees}
-                            page={page}
-                            totalPages={totalPages}
-                            error={error}
-                            onPageChange={setPage}
-                            onDetail={openDetail}
-                            onEdit={openEdit}
-                            onDelete={setDeleteTarget}
-                        />
-                    )}
+                    <EmployeeTable
+                        employees={employees}
+                        page={page}
+                        totalPages={totalPages}
+                        isLoading={isLoading}
+                        error={error}
+                        onPageChange={setPage}
+                        onDetail={openDetail}
+                        onEdit={openEdit}
+                        onDelete={setDeleteTarget}
+                    />
                 </CardContent>
             </Card>
 

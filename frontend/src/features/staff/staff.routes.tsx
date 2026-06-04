@@ -1,14 +1,16 @@
 /** @format */
 
+import { AppLayoutSkeleton, PageContentSkeleton } from '@/components/layout/AppLayoutSkeleton';
+import { lazy, Suspense } from 'react';
 import { Navigate, type RouteObject } from 'react-router-dom';
 
-import { Suspense } from 'react';
-import StaffLayout from './StaffLayout';
+const StaffLayout      = lazy(() => import('./StaffLayout'));
+const StaffDashboard   = lazy(() => import('./pages/StaffDashboardPage'));
 
 export const staffRoutes: RouteObject = {
     path: '/staff',
     element: (
-        <Suspense fallback={<div>Loading ...</div>}>
+        <Suspense fallback={<AppLayoutSkeleton />}>
             <StaffLayout />
         </Suspense>
     ),
@@ -19,7 +21,11 @@ export const staffRoutes: RouteObject = {
         },
         {
             path: 'dashboard',
-            element: <StaffLayout />,
-        },            
+            element: (
+                <Suspense fallback={<PageContentSkeleton />}>
+                    <StaffDashboard />
+                </Suspense>
+            ),
+        },
     ],
 };

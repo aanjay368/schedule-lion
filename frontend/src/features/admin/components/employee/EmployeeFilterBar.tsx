@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -123,4 +124,4 @@ const EmployeeFilterBar = ({
   );
 };
 
-export default EmployeeFilterBar;
+export default memo(EmployeeFilterBar);
