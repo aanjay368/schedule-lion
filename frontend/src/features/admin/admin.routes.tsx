@@ -1,24 +1,24 @@
 /** @format */
 
+import { lazy, Suspense } from 'react';
 import { Navigate, type RouteObject } from 'react-router-dom';
+import { RequireAdmin } from '@/features/admin/guards/RequireAdmin';
+import { AppLayoutSkeleton, PageContentSkeleton } from '@/components/layout/AppLayoutSkeleton';
 
-import AdminLayout from '@/features/admin/AdminLayout';
-import AdminDashboardPage from '@/features/admin/pages/AdminDashboardPage';
-import AdminEmployeePage from '@/features/admin/pages/AdminEmployeePage';
-import { useRequireAdmin } from '@/features/admin/guards/useRequireAdmin';
-import { Suspense } from 'react';
-
-function RequireAdminWrapper({ children }: { children: React.ReactNode }) {
-	useRequireAdmin({ redirectTo: '/' });
-	return <>{children}</>;
-}
+// Lazy-load layout dan semua halaman admin
+const AdminLayout       = lazy(() => import('@/features/admin/AdminLayout'));
+const AdminDashboardPage = lazy(() => import('@/features/admin/pages/AdminDashboardPage'));
+const AdminEmployeePage  = lazy(() => import('@/features/admin/pages/AdminEmployeePage'));
+const AdminSchedulePage  = lazy(() => import('@/features/admin/pages/AdminSchedulePage'));
 
 export const adminRoutes: RouteObject = {
     path: '/admin',
     element: (
-        <Suspense fallback={<div>Loading ...</div>}><RequireAdminWrapper>
-            <AdminLayout />
-        </RequireAdminWrapper></Suspense>
+        <Suspense fallback={<AppLayoutSkeleton />}>
+            <RequireAdmin>
+                <AdminLayout />
+            </RequireAdmin>
+        </Suspense>
     ),
     children: [
         {
@@ -27,11 +27,27 @@ export const adminRoutes: RouteObject = {
         },
         {
             path: 'dashboard',
-            element: <AdminDashboardPage />,
+            element: (
+                <Suspense fallback={<PageContentSkeleton />}>
+                    <AdminDashboardPage />
+                </Suspense>
+            ),
         },
         {
             path: 'employees',
-            element: <AdminEmployeePage />,
-        },        
+            element: (
+                <Suspense fallback={<PageContentSkeleton />}>
+                    <AdminEmployeePage />
+                </Suspense>
+            ),
+        },
+        {
+            path: 'schedules',
+            element: (
+                <Suspense fallback={<PageContentSkeleton />}>
+                    <AdminSchedulePage />
+                </Suspense>
+            ),
+        },
     ],
 };

@@ -24,7 +24,7 @@ const LoginPage = () => {
         <img
           src="/src/assets/background.webp"
           alt="Background"
-          className="w-full h-full object-cover object-center"
+          className="hidden sm:block w-full h-full object-cover object-center"
         />
       </div>
 
@@ -61,7 +61,7 @@ const LoginPage = () => {
                       <Input
                       className="pl-9"
                         id={field.name}
-                        placeholder="Muhammad Jamaludin Siregar"
+                        placeholder="jamaludin_siregar"
                         aria-invalid={fieldState.invalid}
                         autoComplete="off"
                         {...field}
@@ -86,7 +86,7 @@ const LoginPage = () => {
                       <Input
                         className="pl-9"
                         id={field.name}
-                        placeholder="Muhammad Jamaludin Siregar"
+                        placeholder="********"
                         aria-invalid={fieldState.invalid}
                         autoComplete="off"
                         type="password"

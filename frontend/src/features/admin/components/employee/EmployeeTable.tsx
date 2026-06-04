@@ -1,4 +1,5 @@
 /** @format */
+import { memo } from 'react';
 
 import {
 	Eye,
@@ -25,6 +26,7 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { EmployeeResponse } from '@/model/employee.model';
+import EmployeeTableSkeleton from './EmployeeTableSkeleton';
 
 const initials = (name: string) =>
 	name
@@ -38,6 +40,7 @@ type EmployeeTableProps = {
 	employees: EmployeeResponse[];
 	page: number;
 	totalPages: number;
+	isLoading: boolean;
 	error?: string | null;
 	onPageChange: (page: number) => void;
 	onDetail: (employee: EmployeeResponse) => void;
@@ -49,15 +52,28 @@ const EmployeeTable = ({
 	employees,
 	page,
 	totalPages,
+	isLoading,
 	error,
 	onPageChange,
 	onDetail,
 	onEdit,
 	onDelete,
-}: EmployeeTableProps) => {    
+}: EmployeeTableProps) => {
+
+	if (isLoading) {
+		return <EmployeeTableSkeleton />;
+	}
+
 	return (
 		<>
 			<Table>
+				<colgroup>
+					<col style={{ width: 'auto' }} />
+					<col style={{ width: '200px' }} />
+					<col style={{ width: '160px' }} />
+					<col style={{ width: '160px' }} />
+					<col style={{ width: '48px' }} />
+				</colgroup>
 				<TableHeader>
 					<TableRow>
 						<TableHead>Nama lengkap</TableHead>
@@ -164,4 +180,4 @@ const EmployeeTable = ({
 	);
 };
 
-export default EmployeeTable;
+export default memo(EmployeeTable);
