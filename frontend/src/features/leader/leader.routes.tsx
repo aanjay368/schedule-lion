@@ -1,15 +1,16 @@
 /** @format */
 
+import { lazy, Suspense } from 'react';
 import { Navigate, type RouteObject } from 'react-router-dom';
+import { AppLayoutSkeleton, PageContentSkeleton } from '@/components/layout/AppLayoutSkeleton';
 
-import LeaderLayout from '@/features/leader/LeaderLayout';
-import { Suspense } from 'react';
-import LeaderDashboardPage from './pages/LeaderDashboardPage';
+const LeaderLayout    = lazy(() => import('@/features/leader/LeaderLayout'));
+const LeaderDashboard = lazy(() => import('@/features/leader/pages/LeaderDashboardPage'));
 
 export const leaderRoutes: RouteObject = {
     path: '/leader',
     element: (
-        <Suspense fallback={<div>Loading ...</div>}>
+        <Suspense fallback={<AppLayoutSkeleton />}>
             <LeaderLayout />
         </Suspense>
     ),
@@ -20,7 +21,11 @@ export const leaderRoutes: RouteObject = {
         },
         {
             path: 'dashboard',
-            element: <LeaderDashboardPage />,
-        },            
+            element: (
+                <Suspense fallback={<PageContentSkeleton />}>
+                    <LeaderDashboard />
+                </Suspense>
+            ),
+        },
     ],
 };

@@ -181,4 +181,3 @@ const EmployeeForm = ({
 };
 
 export default EmployeeForm;
-export type { EmployeeFormValues };

@@ -98,28 +98,28 @@ export const useEmployees = (): UseEmployeesReturn => {
       limit: LIMIT,
     });
   }, [debouncedSearch, divisionId, positionId, showDeleted, page, fetchAll]);  
-  const setSearch = (v: string) => {
+  const setSearch = useCallback((v: string) => {
     setSearchState(v);
     setPage(1);
-  };
+  }, []);
 
-  const setDivisionId = (v: number | undefined) => {
+  const setDivisionId = useCallback((v: number | undefined) => {
     setDivisionIdState(v);
     setPositionIdState(undefined); // reset posisi ketika divisi berubah
     setPage(1);
-  };
+  }, []);
 
-  const setPositionId = (v: number | undefined) => {
+  const setPositionId = useCallback((v: number | undefined) => {
     setPositionIdState(v);
     setPage(1);
-  };
+  }, []);
 
-  const setShowDeleted = (v: boolean | undefined) => {
+  const setShowDeleted = useCallback((v: boolean | undefined) => {
     setShowDeletedState(v);
     setPage(1);
-  };
+  }, []);
 
-  const create = async (payload: EmployeeFormValues) => {
+  const create = useCallback(async (payload: EmployeeFormValues) => {
     try {
       await employeeService.create(payload);
       await fetchAll({
@@ -136,9 +136,9 @@ export const useEmployees = (): UseEmployeesReturn => {
       }
       throw err;
     }
-  };
+  }, [debouncedSearch, divisionId, positionId, page, fetchAll]);
 
-  const update = async (id: string, payload: EmployeeFormValues) => {
+  const update = useCallback(async (id: string, payload: EmployeeFormValues) => {
     try {
       await employeeService.update(id, payload);
       await fetchAll({
@@ -155,9 +155,9 @@ export const useEmployees = (): UseEmployeesReturn => {
       }
       throw err;
     }
-  };
+  }, [debouncedSearch, divisionId, positionId, page, fetchAll]);
 
-  const remove = async (id: string) => {
+  const remove = useCallback(async (id: string) => {
     await employeeService.remove(id);
     const newPage = employees.length === 1 && page > 1 ? page - 1 : page;
     setPage(newPage);
@@ -168,7 +168,7 @@ export const useEmployees = (): UseEmployeesReturn => {
       page: newPage,
       limit: LIMIT,
     });
-  };
+  }, [employees.length, page, debouncedSearch, divisionId, positionId, fetchAll]);
 
   return {
     employees,

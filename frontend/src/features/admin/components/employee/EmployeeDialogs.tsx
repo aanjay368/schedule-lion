@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import {
     Dialog, DialogContent, DialogHeader,
     DialogTitle, DialogDescription, DialogFooter,
@@ -8,6 +9,7 @@ import {
     AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import EmployeeForm from './EmployeeForm';
 import type { EmployeeResponse } from '@/model/employee.model';
 import type { UseFormReturn } from 'react-hook-form';
@@ -71,8 +73,17 @@ const EmployeeDialogs = ({
                             {mode === 'detail' ? 'Tutup' : 'Batal'}
                         </Button>
                         {mode !== 'detail' && (
-                            <Button onClick={onSave}>
-                                {mode === 'add' ? 'Simpan' : 'Perbarui'}
+                            <Button onClick={onSave} disabled={rhf.formState.isSubmitting}>
+                                {rhf.formState.isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Menyimpan...
+                                    </>
+                                ) : mode === 'add' ? (
+                                    'Simpan'
+                                ) : (
+                                    'Perbarui'
+                                )}
                             </Button>
                         )}
                     </DialogFooter>
@@ -107,5 +118,5 @@ const EmployeeDialogs = ({
     );
 };
 
-export default EmployeeDialogs;
+export default memo(EmployeeDialogs);
 export type { DialogMode, EmployeeFormValues };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { divisionService } from '@/features/admin/services/division.service';
 import type { DivisionResponse } from '@/model/division.model';
 import type { PositionResponse } from '@/model/position.model';
@@ -25,12 +25,12 @@ export const useDivisions = (): UseDivisionsReturn => {
             .finally(() => setLoading(false));
     }, []);
 
-    const allPositions = divisions.flatMap((d) => d.positions ?? []);
+    const allPositions = useMemo(() => divisions.flatMap((d) => d.positions ?? []), [divisions]);
 
-    const getPositionsByDivision = (divisionId: number): PositionResponse[] => {
+    const getPositionsByDivision = useCallback((divisionId: number): PositionResponse[] => {
         const division = divisions.find((d) => d.id === divisionId);
         return division?.positions ?? [];
-    };
+    }, [divisions]);
 
     return { divisions, allPositions, getPositionsByDivision, isLoading, error };
 };
