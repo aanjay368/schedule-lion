@@ -2,7 +2,6 @@ package entity
 
 import (
 	"time"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -14,6 +13,7 @@ type User struct {
 	EmployeeID uuid.UUID
 	CreatedAt time.Time `gorm:"autoCreateTime;<-:create"`
 	UpdatedAt time.Time `gorm:"autoCreateTime;autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"autoDeleteTime"`
 	Employee  *Employee `gorm:"foreignKey:employee_id;references:id"`
 }
 

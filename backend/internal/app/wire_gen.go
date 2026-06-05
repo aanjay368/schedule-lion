@@ -60,9 +60,20 @@ func InitializeServer() (*Server, error) {
 		UserRepository:     userRepositoryImpl,
 		DB:                 db,
 		Validator:          validate,
+		Config:             configConfig,
 	}
 	employeeHandlerImpl := &handler.EmployeeHandlerImpl{
 		EmployeeService: employeeServiceImpl,
+	}
+	shiftRepositoryImpl := &repository.ShiftRepositoryImpl{}
+	shiftServiceImpl := &service.ShiftServiceImpl{
+		ShiftRepository:    shiftRepositoryImpl,
+		DivisionRepository: divisionRepositoryImpl,
+		Validator:          validate,
+		DB:                 db,
+	}
+	shiftHandlerImpl := &handler.ShiftHandlerImpl{
+		ShiftService: shiftServiceImpl,
 	}
 	server := &Server{
 		App:             app,
@@ -70,6 +81,7 @@ func InitializeServer() (*Server, error) {
 		AuthHandler:     authHandlerImpl,
 		UserHandler:     userHandlerImpl,
 		EmployeeHandler: employeeHandlerImpl,
+		ShiftHandler:    shiftHandlerImpl,
 		Config:          configConfig,
 	}
 	return server, nil
@@ -84,3 +96,5 @@ var authSet = wire.NewSet(wire.Struct(new(service.AuthServiceImpl), "*"), wire.B
 var userSet = wire.NewSet(wire.Struct(new(repository.UserRepositoryImpl), "*"), wire.Bind(new(repository.UserRepository), new(*repository.UserRepositoryImpl)), wire.Struct(new(service.UserServiceImpl), "*"), wire.Bind(new(service.UserService), new(*service.UserServiceImpl)), wire.Struct(new(handler.UserHandlerImpl), "*"), wire.Bind(new(handler.UserHandler), new(*handler.UserHandlerImpl)))
 
 var employeeSet = wire.NewSet(wire.Struct(new(repository.EmployeeRepositoryImpl), "*"), wire.Bind(new(repository.EmployeeRepository), new(*repository.EmployeeRepositoryImpl)), wire.Struct(new(service.EmployeeServiceImpl), "*"), wire.Bind(new(service.EmployeeService), new(*service.EmployeeServiceImpl)), wire.Struct(new(handler.EmployeeHandlerImpl), "*"), wire.Bind(new(handler.EmployeeHandler), new(*handler.EmployeeHandlerImpl)))
+
+var shiftSet = wire.NewSet(wire.Struct(new(repository.ShiftRepositoryImpl), "*"), wire.Bind(new(repository.ShiftRepository), new(*repository.ShiftRepositoryImpl)), wire.Struct(new(service.ShiftServiceImpl), "*"), wire.Bind(new(service.ShiftService), new(*service.ShiftServiceImpl)), wire.Struct(new(handler.ShiftHandlerImpl), "*"), wire.Bind(new(handler.ShiftHandler), new(*handler.ShiftHandlerImpl)))

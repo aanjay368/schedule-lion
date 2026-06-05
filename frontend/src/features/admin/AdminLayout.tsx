@@ -9,11 +9,11 @@ const adminNavItems = [
 ];
 
 const AdminLayout = () => {
-    return (
-        <AppLayout navItems={adminNavItems}>
-            <Outlet />
-        </AppLayout>
-    );
+  return (
+    <AppLayout navItems={adminNavItems}>
+      <Outlet />
+    </AppLayout>
+  );
 };
 
 export default AdminLayout;

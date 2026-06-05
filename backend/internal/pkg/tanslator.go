@@ -58,6 +58,21 @@ func RegisterTranslations(v *validator.Validate, trans ut.Translator) {
 			message:        "{0} hanya boleh mengandung huruf, spasi, dan titik",
 			withFieldParam: true,
 		},
+		{
+			tag:            "unique_shift_name",
+			message:        "Nama shift sudah digunakan pada divisi dan posisi tersebut",
+			withFieldParam: false,
+		},
+		{
+			tag:            "unique_shift_code",
+			message:        "Kode shift sudah digunakan pada divisi dan posisi tersebut",
+			withFieldParam: false,
+		},
+		{
+			tag:            "is_last_flight",
+			message:        "Jam selesai harus dikosongkan untuk Last Flight",
+			withFieldParam: false,
+		},
 	}
 
 	for _, e := range entries {

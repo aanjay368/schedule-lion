@@ -1,5 +1,4 @@
 /** @format */
-
 import { lazy, Suspense } from 'react';
 import { Navigate, type RouteObject } from 'react-router-dom';
 import { RequireAdmin } from '@/features/admin/guards/RequireAdmin';
