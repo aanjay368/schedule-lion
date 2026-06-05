@@ -7,6 +7,7 @@ import AdminDashboardPage from '@/features/admin/pages/AdminDashboardPage';
 import AdminEmployeePage from '@/features/admin/pages/AdminEmployeePage';
 import { useRequireAdmin } from '@/features/admin/guards/useRequireAdmin';
 import { Suspense } from 'react';
+import AdminSchedulePage from './pages/AdminSchedulePage';
 
 function RequireAdminWrapper({ children }: { children: React.ReactNode }) {
 	useRequireAdmin({ redirectTo: '/' });
@@ -33,5 +34,9 @@ export const adminRoutes: RouteObject = {
             path: 'employees',
             element: <AdminEmployeePage />,
         },        
+        {
+            path: 'schedules',
+            element: <AdminSchedulePage />,
+        },
     ],
 };

@@ -7,6 +7,7 @@ import (
 
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -41,7 +42,10 @@ func registerCustomValidations(v *validator.Validate, db *gorm.DB) {
 	v.RegisterValidation("exist_division", validateResourceExists(db, "divisions"))
 	v.RegisterValidation("exist_position", validateResourceExists(db, "positions"))
 	v.RegisterValidation("sync_division_position", validateSyncDivisionPosition(db))
+	v.RegisterValidation("unique_shift_name", validateUniqueShiftName(db))
+	v.RegisterValidation("unique_shift_code", validateUniqueShiftCode(db))
 	v.RegisterValidation("alpha_space_dot", validateAlphaSpaceDot)
+	v.RegisterValidation("is_last_flight", validateIsLastFlight)
 }
 
 func validateUniqueNickname(db *gorm.DB) validator.Func {
@@ -63,12 +67,10 @@ func validateUniqueNickname(db *gorm.DB) validator.Func {
 
 		if id != "" {
 			err = db.Table("employees").
-				Unscoped().
 				Where("nickname = ? AND id != ?", nickname, id).
 				Count(&count).Error
 		} else {
 			err = db.Table("employees").
-				Unscoped().
 				Where("nickname = ?", nickname).
 				Count(&count).Error
 		}
@@ -142,7 +144,7 @@ func validateSyncDivisionPosition(db *gorm.DB) validator.Func {
 	}
 }
 
-func validateAlphaSpaceDot(fl validator.FieldLevel) bool {	
+func validateAlphaSpaceDot(fl validator.FieldLevel) bool {
 	value := fl.Field().String()
 	if value == "" {
 		return true
@@ -150,4 +152,100 @@ func validateAlphaSpaceDot(fl validator.FieldLevel) bool {
 
 	regex := regexp.MustCompile(`^[a-zA-Z\s.]+$`)
 	return regex.MatchString(value)
+}
+
+func validateUniqueShiftName(db *gorm.DB) validator.Func {
+	return func(fl validator.FieldLevel) bool {
+		name := fl.Field().String()
+		if name == "" {
+			return true
+		}
+
+		parent := fl.Parent()
+		if parent.Kind() == reflect.Ptr {
+			parent = parent.Elem()
+		}
+
+		divisionIDField := parent.FieldByName("DivisionID")
+		positionIDField := parent.FieldByName("PositionID")
+
+		if !divisionIDField.IsValid() || !positionIDField.IsValid() {
+			return true
+		}
+
+		divisionID := divisionIDField.Int()
+		positionID := positionIDField.Int()
+
+		if divisionID == 0 || positionID == 0 {
+			return true
+		}
+
+		var count int64
+		query := db.Table("shifts").
+			Where("name = ? AND division_id = ? AND position_id = ? AND deleted_at IS NULL", name, divisionID, positionID)
+
+		err := query.Count(&count).Error
+		if err != nil {
+			return false
+		}
+
+		return count == 0
+	}
+}
+
+func validateUniqueShiftCode(db *gorm.DB) validator.Func {
+	return func(fl validator.FieldLevel) bool {
+		code := fl.Field().String()
+		if code == "" {
+			return true
+		}
+
+		parent := fl.Parent()
+		if parent.Kind() == reflect.Ptr {
+			parent = parent.Elem()
+		}
+
+		divisionIDField := parent.FieldByName("DivisionID")
+		positionIDField := parent.FieldByName("PositionID")
+
+		if !divisionIDField.IsValid() || !positionIDField.IsValid() {
+			return true
+		}
+
+		divisionID := divisionIDField.Int()
+		positionID := positionIDField.Int()
+
+		if divisionID == 0 || positionID == 0 {
+			return true
+		}
+
+		var count int64
+		query := db.Table("shifts").
+			Where("code = ? AND division_id = ? AND position_id = ? AND deleted_at IS NULL", code, divisionID, positionID)
+
+		err := query.Count(&count).Error
+		if err != nil {
+			return false
+		}
+
+		return count == 0
+	}
+}
+
+func validateIsLastFlight(fl validator.FieldLevel) bool {
+	value, _, _, ok := fl.GetStructFieldOK2()
+	if !ok {
+		return false
+	}
+
+	isLastFlight := value.Bool()
+	field := new(fl.Field().Interface().(datatypes.Time))
+
+	if isLastFlight && field == nil {
+		return false
+	} else if !isLastFlight && field != nil {
+		return false
+	} 
+
+	return true
 }
