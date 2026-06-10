@@ -11,6 +11,7 @@ type EmployeeRepository interface {
 	FindByNickname(db *gorm.DB, nickname string) (*entity.Employee, error)
 	FindByID(db *gorm.DB, id string) (*entity.Employee, error)
 	FindAll(db *gorm.DB) ([]entity.Employee, error)
+	FindByDivisionAndPosition(db *gorm.DB, divisionID int, positionID int) ([]entity.Employee, error)
 	Search(db *gorm.DB, request *request.SearchEmployeeRequest) ([]entity.Employee, int64, error)
 	Delete(db *gorm.DB, employee *entity.Employee) error
 }
@@ -19,6 +20,12 @@ type EmployeeRepositoryImpl struct{}
 
 func (repository *EmployeeRepositoryImpl) Save(db *gorm.DB, employee *entity.Employee) error {
 	return db.Save(employee).Error
+}
+
+func (repository *EmployeeRepositoryImpl) FindByDivisionAndPosition(db *gorm.DB, divisionID int, positionID int) ([]entity.Employee, error) {
+	var employees []entity.Employee
+	err := db.Where("division_id = ? AND position_id = ?", divisionID, positionID).Find(&employees).Error
+	return employees, err
 }
 
 func (repository *EmployeeRepositoryImpl) FindByNickname(db *gorm.DB, nickname string) (*entity.Employee, error) {

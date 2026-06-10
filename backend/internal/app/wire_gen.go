@@ -75,6 +75,18 @@ func InitializeServer() (*Server, error) {
 	shiftHandlerImpl := &handler.ShiftHandlerImpl{
 		ShiftService: shiftServiceImpl,
 	}
+	scheduleRepositoryImpl := &repository.ScheduleRepositoryImpl{}
+	scheduleServiceImpl := &service.ScheduleServiceImpl{
+		ScheduleRepository: scheduleRepositoryImpl,
+		EmployeeRepository: employeeRepositoryImpl,
+		ShiftRepository:    shiftRepositoryImpl,
+		DivisionRepository: divisionRepositoryImpl,
+		DB:                 db,
+		Validator:          validate,
+	}
+	scheduleHandlerImpl := &handler.ScheduleHandlerImpl{
+		ScheduleService: scheduleServiceImpl,
+	}
 	server := &Server{
 		App:             app,
 		DivisionHandler: divisionHandlerImpl,
@@ -82,6 +94,7 @@ func InitializeServer() (*Server, error) {
 		UserHandler:     userHandlerImpl,
 		EmployeeHandler: employeeHandlerImpl,
 		ShiftHandler:    shiftHandlerImpl,
+		ScheduleHandler: scheduleHandlerImpl,
 		Config:          configConfig,
 	}
 	return server, nil
@@ -98,3 +111,5 @@ var userSet = wire.NewSet(wire.Struct(new(repository.UserRepositoryImpl), "*"), 
 var employeeSet = wire.NewSet(wire.Struct(new(repository.EmployeeRepositoryImpl), "*"), wire.Bind(new(repository.EmployeeRepository), new(*repository.EmployeeRepositoryImpl)), wire.Struct(new(service.EmployeeServiceImpl), "*"), wire.Bind(new(service.EmployeeService), new(*service.EmployeeServiceImpl)), wire.Struct(new(handler.EmployeeHandlerImpl), "*"), wire.Bind(new(handler.EmployeeHandler), new(*handler.EmployeeHandlerImpl)))
 
 var shiftSet = wire.NewSet(wire.Struct(new(repository.ShiftRepositoryImpl), "*"), wire.Bind(new(repository.ShiftRepository), new(*repository.ShiftRepositoryImpl)), wire.Struct(new(service.ShiftServiceImpl), "*"), wire.Bind(new(service.ShiftService), new(*service.ShiftServiceImpl)), wire.Struct(new(handler.ShiftHandlerImpl), "*"), wire.Bind(new(handler.ShiftHandler), new(*handler.ShiftHandlerImpl)))
+
+var scheduleSet = wire.NewSet(wire.Struct(new(repository.ScheduleRepositoryImpl), "*"), wire.Bind(new(repository.ScheduleRepository), new(*repository.ScheduleRepositoryImpl)), wire.Struct(new(service.ScheduleServiceImpl), "*"), wire.Bind(new(service.ScheduleService), new(*service.ScheduleServiceImpl)), wire.Struct(new(handler.ScheduleHandlerImpl), "*"), wire.Bind(new(handler.ScheduleHandler), new(*handler.ScheduleHandlerImpl)))

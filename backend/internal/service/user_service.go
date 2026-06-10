@@ -2,8 +2,8 @@ package service
 
 import (
 	"log"
-	"strings"
 
+	"github.com/aanjay368/schedule-lion/backend/internal/mapper"
 	"github.com/aanjay368/schedule-lion/backend/internal/model/response"
 	"github.com/aanjay368/schedule-lion/backend/internal/repository"
 	"github.com/gofiber/fiber/v3"
@@ -28,31 +28,11 @@ func (service *UserServiceImpl) GetCurrent(userID string) (*response.UserRespons
 		return nil, fiber.NewError(fiber.StatusNotFound, "user not found")
 	}
 
-	userResponse := response.UserResponse{
-		ID:       user.ID.String(),
-		Username: user.Username,
-		Role:     strings.ToLower(user.Employee.Position.Name),
+	role := ""
+	if user.Employee != nil && user.Employee.Position != nil {
+		role = user.Employee.Position.Name
 	}
 
-	if user.Employee != nil {
-		userResponse.Employee = response.EmployeeResponse{
-			ID:       user.Employee.ID.String(),
-			FullName: user.Employee.FullName,
-			Nickname: user.Employee.Nickname,
-		}
-		if user.Employee.Division != nil {
-			userResponse.Employee.Division = response.DivisionResponse{
-				ID:   user.Employee.Division.ID,
-				Name: user.Employee.Division.Name,
-			}
-		}
-		if user.Employee.Position != nil {
-			userResponse.Employee.Position = response.PositionResponse{
-				ID:   user.Employee.Position.ID,
-				Name: user.Employee.Position.Name,
-			}
-		}
-	}
-
+	userResponse := mapper.ToUserResponse(user, role)
 	return &userResponse, nil
 }

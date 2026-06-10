@@ -16,6 +16,7 @@ type Server struct {
 	UserHandler     handler.UserHandler
 	EmployeeHandler handler.EmployeeHandler
 	ShiftHandler    handler.ShiftHandler
+	ScheduleHandler handler.ScheduleHandler
 	Config          *config.Config
 }
 
@@ -31,6 +32,7 @@ func (server *Server) RunApp(addr string) error {
 	server.userRoutes(api)
 	server.employeeRoutes(api)
 	server.shiftRoutes(api)
+	server.scheduleRoutes(api)
 
 	return server.App.Listen(addr, fiber.ListenConfig{
 		EnablePrefork: true,	
@@ -73,4 +75,11 @@ func (server *Server) shiftRoutes(router fiber.Router) {
 	shifts.Post("/", server.ShiftHandler.Create)
 	shifts.Put("/:id", server.ShiftHandler.Update)
 	shifts.Delete("/:id", server.ShiftHandler.Delete)
+}
+
+func (server *Server) scheduleRoutes(router fiber.Router) {
+	schedules := router.Group("/schedules")
+	schedules.Use(middleware.AuthMiddleware(server.Config))
+	schedules.Post("/", middleware.AdminOnly, server.ScheduleHandler.UploadSchedule)
+	schedules.Get("/", server.ScheduleHandler.GetSchedules)
 }

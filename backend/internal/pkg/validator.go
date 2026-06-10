@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
-
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/datatypes"
@@ -234,18 +233,19 @@ func validateUniqueShiftCode(db *gorm.DB) validator.Func {
 
 func validateIsLastFlight(fl validator.FieldLevel) bool {
 	value, _, _, ok := fl.GetStructFieldOK2()
+
 	if !ok {
 		return false
 	}
 
 	isLastFlight := value.Bool()
-	field := new(fl.Field().Interface().(datatypes.Time))
+	field := fl.Field().Interface().(datatypes.Time)
 
-	if isLastFlight && field == nil {
+	if isLastFlight && field != 0 {
 		return false
-	} else if !isLastFlight && field != nil {
+	} else if !isLastFlight && field == 0 {
 		return false
-	} 
+	}
 
 	return true
 }

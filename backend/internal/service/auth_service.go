@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/aanjay368/schedule-lion/backend/internal/config"
+	"github.com/aanjay368/schedule-lion/backend/internal/mapper"
 	"github.com/aanjay368/schedule-lion/backend/internal/model/request"
 	"github.com/aanjay368/schedule-lion/backend/internal/model/response"
 	"github.com/aanjay368/schedule-lion/backend/internal/pkg"
@@ -53,37 +54,12 @@ func (service *AuthServiceImpl) Login(request request.LoginRequest) (*response.U
 		return nil, "", "", err
 	}
 
-	userResponse := response.UserResponse{
-		ID:       user.ID.String(),
-		Username: user.Username,
-		Role:     strings.ToLower(role),
-	}
-
-	if user.Employee != nil {
-		userResponse.Employee = response.EmployeeResponse{
-			ID:       user.Employee.ID.String(),
-			FullName: user.Employee.FullName,
-			Nickname: user.Employee.Nickname,
-		}
-		if user.Employee.Division != nil {
-			userResponse.Employee.Division = response.DivisionResponse{
-				ID:   user.Employee.Division.ID,
-				Name: user.Employee.Division.Name,
-			}
-		}
-		if user.Employee.Position != nil {
-			userResponse.Employee.Position = response.PositionResponse{
-				ID:   user.Employee.Position.ID,
-				Name: user.Employee.Position.Name,
-			}
-		}
-	}
+	userResponse := mapper.ToUserResponse(user, role)
 
 	return &userResponse, accessToken, refreshToken, nil
 }
 
 func (service *AuthServiceImpl) Refresh(refreshToken string) (string, string, error) {
-		
 	claims, err := pkg.ValidateRefreshToken(refreshToken, service.Config.JWTSecret)
 	if err != nil {
 		return "", "", errors.New("invalid refresh token")
@@ -108,4 +84,3 @@ func (service *AuthServiceImpl) Refresh(refreshToken string) (string, string, er
 
 	return at, rt, nil
 }
-

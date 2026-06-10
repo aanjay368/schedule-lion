@@ -18,4 +18,6 @@ INSERT INTO shifts (name, code, start_time, end_time, division_id, position_id) 
 ('Libur', 'L', NULL, NULL, 3, 1),
 ('Libur', 'L', NULL, NULL, 2, 2),
 ('Libur', 'L', NULL, NULL, 3, 2),
+('Pagi', 'P', '08:00', '15:00', 3, 1),
+('Siang', 'S', '15:00', NULL, 3, 1),
 ('Libur', 'L', NULL, NULL, 1, 3);
